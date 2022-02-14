@@ -5,7 +5,6 @@ import (
 	"github.com/derailed/k9s/internal/ui"
 	"github.com/gdamore/tcell/v2"
 	"gopkg.in/yaml.v2"
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
 	"time"
@@ -120,18 +119,41 @@ func (vr *CISKubeBenchReport) viewReport(evt *tcell.EventKey) *tcell.EventKey {
 		return nil
 	}
 
+	/*
+	For some reason, utilizing this method of unmarshalling the unstructured data causes data loss
+	The method performed after this comment allows for all required data to unmarshal correctly into the AquaSecurityKubeBenchReport type
 
 	var report AquaSecurityKubeBenchReports
 	err = runtime.DefaultUnstructuredConverter.FromUnstructured(r.(*unstructured.Unstructured).Object, &report)
 	if err != nil {
 		vr .App().Flash().Err(err)
 		return nil
+	}*/
+
+
+	reportMap, err := runtime.DefaultUnstructuredConverter.ToUnstructured(r)
+	if err != nil {
+		vr.App().Flash().Err(err)
+		return nil
+	}
+
+	var report AquaSecurityKubeBenchReports
+	b, err := yaml.Marshal(reportMap)
+	if err != nil {
+		vr.App().Flash().Err(err)
+		return nil
+	}
+
+	err = yaml.Unmarshal(b, &report)
+	if err != nil {
+		vr.App().Flash().Err(err)
+		return nil
 	}
 
 	type testSummary struct {
-		testNumber string
-		description string
-		status string
+		TestNumber string
+		Description string
+		Status string
 	}
 
 	kbrs := make(map[string][]testSummary)
@@ -139,21 +161,21 @@ func (vr *CISKubeBenchReport) viewReport(evt *tcell.EventKey) *tcell.EventKey {
 		for _, test := range section.Tests {
 			for _, result := range test.Results {
 				var ts testSummary
-				ts.status = result.Status
-				ts.description = result.TestDesc
-				ts.testNumber = result.TestNumber
+				ts.Status = result.Status
+				ts.Description = result.TestDesc
+				ts.TestNumber = result.TestNumber
 				kbrs[test.Desc] = append(kbrs[test.Desc], ts)
 			}
 		}
 	}
 
-	raw, err := yaml.Marshal(report.Report)
+	raw, err := yaml.Marshal(kbrs)
 	if err != nil {
-		vr .App().Flash().Errf("Error decoding vulnerability report %vr ", err)
+		vr .App().Flash().Errf("Error decoding kubebenchreport %vr ", err)
 		return nil
 	}
 
-	details := NewDetails(vr .App(), "Vulnerability Report Summary", path, true).Update(string(raw))
+	details := NewDetails(vr .App(), "KubeBench Report Summary", path, true).Update(string(raw))
 	if err := vr .App().inject(details); err != nil {
 		vr .App().Flash().Err(err)
 	}
