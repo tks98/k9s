@@ -91,6 +91,9 @@ func miscViewers(vv MetaViewers) {
 	vv[client.NewGVR("sanitizer")] = MetaViewer{
 		viewerFn: NewSanitizer,
 	}
+	vv[client.NewGVR("aquasecurity.github.io/v1alpha1/vulnerabilityreports")] = MetaViewer{
+		viewerFn: NewVulerabilityReport,
+	}
 }
 
 func appsViewers(vv MetaViewers) {
