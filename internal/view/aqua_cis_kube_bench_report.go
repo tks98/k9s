@@ -90,7 +90,7 @@ func NewCISKubeBenchReport(gvr client.GVR) ResourceViewer {
 
 func (vr *CISKubeBenchReport) bindKeys(aa ui.KeyActions) {
 	aa.Add(ui.KeyActions{
-		ui.KeyX: ui.NewKeyAction("ViewReportSummary", vr.viewReport, true),
+		ui.KeyX: ui.NewKeyAction("View Report Summary", vr.viewReport, true),
 	})
 }
 
@@ -161,11 +161,11 @@ func (vr *CISKubeBenchReport) viewReport(evt *tcell.EventKey) *tcell.EventKey {
 
 	raw, err := yaml.Marshal(kbrs)
 	if err != nil {
-		vr.App().Flash().Errf("Error decoding kubebenchreport %vr ", err)
+		vr.App().Flash().Errf("Error viewing kube-bench report summary %vr ", err)
 		return nil
 	}
 
-	details := NewDetails(vr.App(), "KubeBenchReport Summary", path, true).Update(string(raw))
+	details := NewDetails(vr.App(), "Summary", path, true).Update(string(raw))
 	if err := vr.App().inject(details); err != nil {
 		vr.App().Flash().Err(err)
 	}

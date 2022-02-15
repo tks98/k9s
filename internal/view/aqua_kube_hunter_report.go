@@ -63,7 +63,7 @@ func NewKubeHunterReport(gvr client.GVR) ResourceViewer {
 
 func (vr *KubeHunterReport) bindKeys(aa ui.KeyActions) {
 	aa.Add(ui.KeyActions{
-		ui.KeyX: ui.NewKeyAction("ViewReportSummary", vr.viewReport, true),
+		ui.KeyX: ui.NewKeyAction("View Report Summary", vr.viewReport, true),
 	})
 }
 
@@ -107,11 +107,11 @@ func (vr *KubeHunterReport) viewReport(evt *tcell.EventKey) *tcell.EventKey {
 
 	raw, err := yaml.Marshal(rs)
 	if err != nil {
-		vr.App().Flash().Errf("Error decoding kubehunterreport %vr ", err)
+		vr.App().Flash().Errf("Error viewing kube-hunter report summary %vr ", err)
 		return nil
 	}
 
-	details := NewDetails(vr.App(), "KubeHunterReport Summary", path, true).Update(string(raw))
+	details := NewDetails(vr.App(), "Summary", path, true).Update(string(raw))
 	if err := vr.App().inject(details); err != nil {
 		vr.App().Flash().Err(err)
 	}
