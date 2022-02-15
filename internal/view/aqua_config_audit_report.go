@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-type AquasecurityConfigAuditReport struct {
+type AquaSecurityConfigAuditReport struct {
 	APIVersion string `yaml:"apiVersion"`
 	Kind       string `yaml:"kind"`
 	Metadata   struct {
@@ -88,7 +88,7 @@ type ConfigAuditReport struct {
 	ResourceViewer
 }
 
-// NewSecret returns a new viewer.
+// NewConfigAuditReport returns a new viewer.
 func NewConfigAuditReport(gvr client.GVR) ResourceViewer {
 	vr  := ConfigAuditReport{
 		ResourceViewer: NewBrowser(gvr),
@@ -120,7 +120,7 @@ func (vr *ConfigAuditReport) viewReport(evt *tcell.EventKey) *tcell.EventKey {
 		return nil
 	}
 
-	var report AquasecurityConfigAuditReport
+	var report AquaSecurityConfigAuditReport
 	err = runtime.DefaultUnstructuredConverter.FromUnstructured(r.(*unstructured.Unstructured).Object, &report)
 	if err != nil {
 		vr .App().Flash().Err(err)
@@ -136,7 +136,7 @@ func (vr *ConfigAuditReport) viewReport(evt *tcell.EventKey) *tcell.EventKey {
 		return nil
 	}
 
-	details := NewDetails(vr .App(), "Vulnerability Report Viewer", path, true).Update(string(raw))
+	details := NewDetails(vr .App(), "ConfigAuditReport Summary", path, true).Update(string(raw))
 	if err := vr .App().inject(details); err != nil {
 		vr .App().Flash().Err(err)
 	}
