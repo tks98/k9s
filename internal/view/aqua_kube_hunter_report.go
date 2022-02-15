@@ -102,7 +102,7 @@ func (vr *KubeHunterReport) viewReport(evt *tcell.EventKey) *tcell.EventKey {
 		s.Severity = val.Severity
 		s.Description = val.Description
 		s.Category = val.Category
-		rs[val.Vid] = s
+		rs[val.Vulnerability] = s
 	}
 
 	raw, err := yaml.Marshal(rs)
