@@ -2,6 +2,7 @@
 # move selected line to chosen resource in K9s, then:
 # hit g to generate a starboard html report of the selected resource
 # the report html file will be placed in the same directory you started k9s
+# hit Shift-s to initiate a vulnerability and config audit scan on the workload resource
 plugin:
   generate-starboard-report:
     shortCut: g
@@ -17,3 +18,17 @@ plugin:
     args:
       - -c
       - "starboard report $RESOURCE_NAME/$NAME -n $NAMESPACE --context $CONTEXT > $NAME.$RESOURCE_NAME.html"
+  scan-workload:
+    shortCut: Shift-S
+    confirm: true
+    scopes:
+      - deployments
+      - daemonsets
+      - statefulsets
+      - replicasets
+    description: Scan workload
+    command: sh
+    background: true
+    args:
+      - -c
+      - "starboard scan vulnerabilityreports $RESOURCE_NAME/$NAME -n $NAMESPACE --context $CONTEXT && starboard scan configauditreports $RESOURCE_NAME/$NAME -n $NAMESPACE --context $CONTEXT"
