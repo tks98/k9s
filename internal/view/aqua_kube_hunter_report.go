@@ -10,6 +10,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
+// AquaSecurityKubeHunterReport represents an aqua kube-hunter report crd
 type AquaSecurityKubeHunterReport struct {
 	APIVersion string `yaml:"apiVersion"`
 	Kind       string `yaml:"kind"`
@@ -96,16 +97,16 @@ func (vr *KubeHunterReport) viewReport(evt *tcell.EventKey) *tcell.EventKey {
 		Category    string
 	}
 
-	rs := make(map[string]reportSummary, len(report.Report.Vulnerabilities))
+	summary := make(map[string]reportSummary, len(report.Report.Vulnerabilities))
 	for _, val := range report.Report.Vulnerabilities {
-		var s reportSummary
-		s.Severity = val.Severity
-		s.Description = val.Description
-		s.Category = val.Category
-		rs[val.Vulnerability] = s
+		summary[val.Vulnerability] = reportSummary {
+			Severity:    val.Severity,
+			Description: val.Description,
+			Category:    val.Category,
+		}
 	}
 
-	raw, err := yaml.Marshal(rs)
+	raw, err := yaml.Marshal(summary)
 	if err != nil {
 		vr.App().Flash().Errf("Error viewing kube-hunter report summary %vr ", err)
 		return nil

@@ -10,6 +10,7 @@ import (
 	"time"
 )
 
+// AquaSecurityKubeBenchReport represents an aqua kube-bench report crd
 type AquaSecurityKubeBenchReport struct {
 	APIVersion string `yaml:"apiVersion"`
 	Kind       string `yaml:"kind"`
@@ -110,17 +111,6 @@ func (vr *CISKubeBenchReport) viewReport(evt *tcell.EventKey) *tcell.EventKey {
 		return nil
 	}
 
-	/*
-		For some reason, utilizing this method of unmarshalling the unstructured data causes data loss
-		The method performed after this comment allows for all required data to unmarshal correctly into the AquaSecurityKubeBenchReport type
-
-		var report AquaSecurityKubeBenchReports
-		err = runtime.DefaultUnstructuredConverter.FromUnstructured(r.(*unstructured.Unstructured).Object, &report)
-		if err != nil {
-			vr .App().Flash().Err(err)
-			return nil
-		}*/
-
 	reportMap, err := runtime.DefaultUnstructuredConverter.ToUnstructured(r)
 	if err != nil {
 		vr.App().Flash().Err(err)
@@ -150,11 +140,11 @@ func (vr *CISKubeBenchReport) viewReport(evt *tcell.EventKey) *tcell.EventKey {
 	for _, section := range report.Report.Sections {
 		for _, test := range section.Tests {
 			for _, result := range test.Results {
-				var ts reportSummary
-				ts.Status = result.Status
-				ts.Description = result.TestDesc
-				ts.TestNumber = result.TestNumber
-				kbrs[test.Desc] = append(kbrs[test.Desc], ts)
+				kbrs[test.Desc] = append(kbrs[test.Desc], reportSummary {
+					TestNumber:  result.Status,
+					Description: result.TestDesc,
+					Status:      result.TestNumber,
+				})
 			}
 		}
 	}

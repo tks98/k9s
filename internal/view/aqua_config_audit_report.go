@@ -11,6 +11,7 @@ import (
 	"time"
 )
 
+// AquaSecurityConfigAuditReport represents an aqua config-audit report crd
 type AquaSecurityConfigAuditReport struct {
 	APIVersion string `yaml:"apiVersion"`
 	Kind       string `yaml:"kind"`
@@ -83,7 +84,7 @@ type AquaSecurityConfigAuditReport struct {
 	} `yaml:"report"`
 }
 
-// ConfigAuditReport presents a secret viewer.
+// ConfigAuditReport presents a configauditreport viewer.
 type ConfigAuditReport struct {
 	ResourceViewer
 }
@@ -127,10 +128,10 @@ func (vr *ConfigAuditReport) viewReport(evt *tcell.EventKey) *tcell.EventKey {
 		return nil
 	}
 
-	crs := make(map[string]interface{})
-	crs[report.Metadata.Name] = report.Report.Checks
+	summary := make(map[string]interface{})
+	summary[report.Metadata.Name] = report.Report.Checks
 
-	raw, err := yaml.Marshal(crs)
+	raw, err := yaml.Marshal(summary)
 	if err != nil {
 		vr.App().Flash().Errf("Error viewing config-audit report summary %vr ", err)
 		return nil
