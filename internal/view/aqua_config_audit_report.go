@@ -90,10 +90,10 @@ type ConfigAuditReport struct {
 
 // NewConfigAuditReport returns a new viewer.
 func NewConfigAuditReport(gvr client.GVR) ResourceViewer {
-	vr  := ConfigAuditReport{
+	vr := ConfigAuditReport{
 		ResourceViewer: NewBrowser(gvr),
 	}
-	vr.AddBindKeysFn(vr .bindKeys)
+	vr.AddBindKeysFn(vr.bindKeys)
 
 	return &vr
 }
@@ -114,7 +114,7 @@ func (vr *ConfigAuditReport) viewReport(evt *tcell.EventKey) *tcell.EventKey {
 		return evt
 	}
 
-	r, err := vr.App().factory.Get(vr .GVR().String(), path, true, labels.Everything())
+	r, err := vr.App().factory.Get(vr.GVR().String(), path, true, labels.Everything())
 	if err != nil {
 		vr.App().Flash().Err(err)
 		return nil
@@ -123,7 +123,7 @@ func (vr *ConfigAuditReport) viewReport(evt *tcell.EventKey) *tcell.EventKey {
 	var report AquaSecurityConfigAuditReport
 	err = runtime.DefaultUnstructuredConverter.FromUnstructured(r.(*unstructured.Unstructured).Object, &report)
 	if err != nil {
-		vr .App().Flash().Err(err)
+		vr.App().Flash().Err(err)
 		return nil
 	}
 
@@ -132,15 +132,14 @@ func (vr *ConfigAuditReport) viewReport(evt *tcell.EventKey) *tcell.EventKey {
 
 	raw, err := yaml.Marshal(crs)
 	if err != nil {
-		vr .App().Flash().Errf("Error decoding vulnerability report %vr ", err)
+		vr.App().Flash().Errf("Error decoding vulnerability report %vr ", err)
 		return nil
 	}
 
-	details := NewDetails(vr .App(), "ConfigAuditReport Summary", path, true).Update(string(raw))
-	if err := vr .App().inject(details); err != nil {
-		vr .App().Flash().Err(err)
+	details := NewDetails(vr.App(), "ConfigAuditReport Summary", path, true).Update(string(raw))
+	if err := vr.App().inject(details); err != nil {
+		vr.App().Flash().Err(err)
 	}
 
 	return nil
 }
-

@@ -53,10 +53,10 @@ type KubeHunterReport struct {
 
 // NewKubeHunterReport returns a new viewer.
 func NewKubeHunterReport(gvr client.GVR) ResourceViewer {
-	vr  := KubeHunterReport{
+	vr := KubeHunterReport{
 		ResourceViewer: NewBrowser(gvr),
 	}
-	vr.AddBindKeysFn(vr .bindKeys)
+	vr.AddBindKeysFn(vr.bindKeys)
 
 	return &vr
 }
@@ -77,7 +77,7 @@ func (vr *KubeHunterReport) viewReport(evt *tcell.EventKey) *tcell.EventKey {
 		return evt
 	}
 
-	r, err := vr.App().factory.Get(vr .GVR().String(), path, true, labels.Everything())
+	r, err := vr.App().factory.Get(vr.GVR().String(), path, true, labels.Everything())
 	if err != nil {
 		vr.App().Flash().Err(err)
 		return nil
@@ -86,14 +86,14 @@ func (vr *KubeHunterReport) viewReport(evt *tcell.EventKey) *tcell.EventKey {
 	var report AquaSecurityKubeHunterReport
 	err = runtime.DefaultUnstructuredConverter.FromUnstructured(r.(*unstructured.Unstructured).Object, &report)
 	if err != nil {
-		vr .App().Flash().Err(err)
+		vr.App().Flash().Err(err)
 		return nil
 	}
 
 	type reportSummary struct {
-		Severity string
+		Severity    string
 		Description string
-		Category string
+		Category    string
 	}
 
 	rs := make(map[string]reportSummary, len(report.Report.Vulnerabilities))
@@ -107,13 +107,13 @@ func (vr *KubeHunterReport) viewReport(evt *tcell.EventKey) *tcell.EventKey {
 
 	raw, err := yaml.Marshal(rs)
 	if err != nil {
-		vr .App().Flash().Errf("Error decoding kubehunterreport %vr ", err)
+		vr.App().Flash().Errf("Error decoding kubehunterreport %vr ", err)
 		return nil
 	}
 
-	details := NewDetails(vr .App(), "KubeHunterReport Summary", path, true).Update(string(raw))
-	if err := vr .App().inject(details); err != nil {
-		vr .App().Flash().Err(err)
+	details := NewDetails(vr.App(), "KubeHunterReport Summary", path, true).Update(string(raw))
+	if err := vr.App().inject(details); err != nil {
+		vr.App().Flash().Err(err)
 	}
 
 	return nil

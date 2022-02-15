@@ -80,10 +80,10 @@ type CISKubeBenchReport struct {
 
 // NewCISKubeBenchReport returns a new viewer.
 func NewCISKubeBenchReport(gvr client.GVR) ResourceViewer {
-	vr  := CISKubeBenchReport{
+	vr := CISKubeBenchReport{
 		ResourceViewer: NewBrowser(gvr),
 	}
-	vr.AddBindKeysFn(vr .bindKeys)
+	vr.AddBindKeysFn(vr.bindKeys)
 
 	return &vr
 }
@@ -104,23 +104,22 @@ func (vr *CISKubeBenchReport) viewReport(evt *tcell.EventKey) *tcell.EventKey {
 		return evt
 	}
 
-	r, err := vr.App().factory.Get(vr .GVR().String(), path, true, labels.Everything())
+	r, err := vr.App().factory.Get(vr.GVR().String(), path, true, labels.Everything())
 	if err != nil {
 		vr.App().Flash().Err(err)
 		return nil
 	}
 
 	/*
-	For some reason, utilizing this method of unmarshalling the unstructured data causes data loss
-	The method performed after this comment allows for all required data to unmarshal correctly into the AquaSecurityKubeBenchReport type
+		For some reason, utilizing this method of unmarshalling the unstructured data causes data loss
+		The method performed after this comment allows for all required data to unmarshal correctly into the AquaSecurityKubeBenchReport type
 
-	var report AquaSecurityKubeBenchReports
-	err = runtime.DefaultUnstructuredConverter.FromUnstructured(r.(*unstructured.Unstructured).Object, &report)
-	if err != nil {
-		vr .App().Flash().Err(err)
-		return nil
-	}*/
-
+		var report AquaSecurityKubeBenchReports
+		err = runtime.DefaultUnstructuredConverter.FromUnstructured(r.(*unstructured.Unstructured).Object, &report)
+		if err != nil {
+			vr .App().Flash().Err(err)
+			return nil
+		}*/
 
 	reportMap, err := runtime.DefaultUnstructuredConverter.ToUnstructured(r)
 	if err != nil {
@@ -142,9 +141,9 @@ func (vr *CISKubeBenchReport) viewReport(evt *tcell.EventKey) *tcell.EventKey {
 	}
 
 	type reportSummary struct {
-		TestNumber string
+		TestNumber  string
 		Description string
-		Status string
+		Status      string
 	}
 
 	kbrs := make(map[string][]reportSummary)
@@ -162,13 +161,13 @@ func (vr *CISKubeBenchReport) viewReport(evt *tcell.EventKey) *tcell.EventKey {
 
 	raw, err := yaml.Marshal(kbrs)
 	if err != nil {
-		vr .App().Flash().Errf("Error decoding kubebenchreport %vr ", err)
+		vr.App().Flash().Errf("Error decoding kubebenchreport %vr ", err)
 		return nil
 	}
 
-	details := NewDetails(vr .App(), "KubeBenchReport Summary", path, true).Update(string(raw))
-	if err := vr .App().inject(details); err != nil {
-		vr .App().Flash().Err(err)
+	details := NewDetails(vr.App(), "KubeBenchReport Summary", path, true).Update(string(raw))
+	if err := vr.App().inject(details); err != nil {
+		vr.App().Flash().Err(err)
 	}
 
 	return nil
