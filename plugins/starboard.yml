@@ -1,0 +1,19 @@
+# $HOME/.k9s/plugin.yml
+# move selected line to chosen resource in K9s, then:
+# hit g to generate a starboard html report of the selected resource
+# the report html file will be placed in the same directory you started k9s
+plugin:
+  generate-starboard-report:
+    shortCut: g
+    confirm: true
+    scopes:
+      - deployments
+      - daemonsets
+      - statefulsets
+      - replicasets
+    description: Generate HTML Report
+    command: sh
+    background: false
+    args:
+      - -c
+      - "starboard report $RESOURCE_NAME/$NAME -n $NAMESPACE --context $CONTEXT > $NAME.$RESOURCE_NAME.html"
