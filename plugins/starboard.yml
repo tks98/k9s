@@ -2,9 +2,11 @@
 # move selected line to chosen resource in K9s, then:
 # hit g to generate a starboard html report of the selected resource
 # the report html file will be placed in the same directory you started k9s
-# hit Shift-s to initiate a vulnerability and config audit scan on the workload resource
+# hit Shift-W to initiate a vulnerability and config audit scan on the workload resource
+# hit Shift-B to initiate a kube-bench scan on all nodes
+# hit Shift-H to initiate a kube-hunter scan on k8s
 plugin:
-  generate-starboard-report:
+  generate-report:
     shortCut: g
     confirm: true
     scopes:
@@ -12,6 +14,8 @@ plugin:
       - daemonsets
       - statefulsets
       - replicasets
+      - nodes
+      - namespace
     description: Generate HTML Report
     command: sh
     background: false
@@ -19,7 +23,7 @@ plugin:
       - -c
       - "starboard report $RESOURCE_NAME/$NAME -n $NAMESPACE --context $CONTEXT > $NAME.$RESOURCE_NAME.html"
   scan-workload:
-    shortCut: Shift-S
+    shortCut: Shift-W
     confirm: true
     scopes:
       - deployments
@@ -32,3 +36,25 @@ plugin:
     args:
       - -c
       - "starboard scan vulnerabilityreports $RESOURCE_NAME/$NAME -n $NAMESPACE --context $CONTEXT && starboard scan configauditreports $RESOURCE_NAME/$NAME -n $NAMESPACE --context $CONTEXT"
+  scan-kube-bench:
+    shortCut: Shift-B
+    confirm: true
+    scopes:
+      - nodes
+    description: Scan Nodes KubeBench
+    command: sh
+    background: true
+    args:
+      - -c
+      - "starboard scan ciskubebenchreports  --context $CONTEXT"
+  scan-kube-hunter:
+    shortCut: Shift-H
+    confirm: true
+    scopes:
+      - nodes
+    description: Scan K8s KubeHunter
+    command: sh
+    background: true
+    args:
+      - -c
+      - "starboard scan kubehunterreports  --context $CONTEXT"
